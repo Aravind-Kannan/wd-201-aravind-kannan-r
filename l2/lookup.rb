@@ -18,8 +18,6 @@ domain = get_command_line_argument
 # https://www.rubydoc.info/stdlib/core/IO:readlines
 dns_raw = File.readlines("zone")
 
-# ..
-# ..
 def parse_dns(lines)
   records = {}
   lines.each do |line|
@@ -47,9 +45,6 @@ def resolve(dns_records, lookup_chain, domain)
     exit
   end
 end
-
-# ..
-# ..
 
 # To complete the assignment, implement `parse_dns` and `resolve`.
 # Remember to implement them above this line since in Ruby
