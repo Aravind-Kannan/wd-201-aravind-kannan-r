@@ -20,12 +20,32 @@ dns_raw = File.readlines("zone")
 
 # ..
 # ..
-def parse_dns(raw)
-  puts
+def parse_dns(lines)
+  records = {}
+  lines.each do |line|
+    mod = line.split(",")
+    if mod.first == "A"
+      records["#{mod[1]}".strip] = ["#{mod[2]}".strip, "A"]
+    elsif mod.first == "CNAME"
+      records["#{mod[1]}".strip] = ["#{mod[2]}".strip, "CNAME"]
+    end
+  end
+  return records
 end
 
 def resolve(dns_records, lookup_chain, domain)
-  puts
+  if dns_records[domain] != nil
+    dest = dns_records[domain]
+    lookup_chain.append(dest.first)
+    if dest.last == "A"
+      return lookup_chain
+    elsif dest.last == "CNAME"
+      resolve(dns_records, lookup_chain, dest.first)
+    end
+  else
+    puts "Error: record not found for #{domain}"
+    exit
+  end
 end
 
 # ..
