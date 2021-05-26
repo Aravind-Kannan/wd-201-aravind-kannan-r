@@ -3,7 +3,9 @@ Repository for Pupilfirst WD-201 Course Assignments
 ## L2: Introduction to ruby
 
 Assignment: Recursive DNS resolver
+
 Location: l2/
+
 Files:
 
 - <code>lookup.rb</code> contains the code for:
