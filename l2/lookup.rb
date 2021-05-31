@@ -21,8 +21,7 @@ dns_raw = File.readlines("zone")
 def parse_dns(raw)
   raw
     .map { |line| line.strip.split(",") }
-    .reject { |line| line.empty? }
-    .reject { |record| record[0] != "A" and record[0] != "CNAME" }
+    .reject { |record| record.empty? or (record[0] != "A" and record[0] != "CNAME") }
     .each_with_object({}) do |record, records|
     records[record[1].strip] = {
       :type => record[0].strip,
