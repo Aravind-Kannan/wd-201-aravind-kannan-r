@@ -18,31 +18,30 @@ domain = get_command_line_argument
 # https://www.rubydoc.info/stdlib/core/IO:readlines
 dns_raw = File.readlines("zone")
 
-def parse_dns(lines)
-  records = {}
-  lines.each do |line|
-    mod = line.split(",")
-    if mod.first == "A"
-      records["#{mod[1]}".strip] = ["#{mod[2]}".strip, "A"]
-    elsif mod.first == "CNAME"
-      records["#{mod[1]}".strip] = ["#{mod[2]}".strip, "CNAME"]
-    end
+def parse_dns(raw)
+  raw
+    .map { |line| line.strip.split(",") }
+    .reject { |line| line.empty? }
+    .reject { |record| record[0] != "A" and record[0] != "CNAME" }
+    .each_with_object({}) do |record, records|
+    records[record[1].strip] = {
+      :type => record[0].strip,
+      :target => record[2].strip,
+    }
   end
-  return records
 end
 
 def resolve(dns_records, lookup_chain, domain)
-  if dns_records[domain] != nil
-    dest = dns_records[domain]
-    lookup_chain.append(dest.first)
-    if dest.last == "A"
-      return lookup_chain
-    elsif dest.last == "CNAME"
-      resolve(dns_records, lookup_chain, dest.first)
-    end
+  record = dns_records[domain]
+  if !record
+    lookup_chain << "Error: Record not found for #{domain}"
+  elsif record[:type] == "A"
+    lookup_chain << record[:target]
+  elsif record[:type] == "CNAME"
+    lookup_chain << record[:target]
+    resolve(dns_records, lookup_chain, record[:target])
   else
-    puts "Error: record not found for #{domain}"
-    exit
+    lookup_chain << "Error: Record type INVALID for #{domain}"
   end
 end
 
