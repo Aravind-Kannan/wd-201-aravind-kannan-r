@@ -15,17 +15,29 @@ class Todo < ActiveRecord::Base
     all.map { |todo| todo.to_displayable_string }
   end
 
+  def self.overdue
+    where("due_date < ?", Date.today)
+  end
+
+  def self.due_today
+    where("due_date = ?", Date.today)
+  end
+
+  def self.due_later
+    where("due_date > ?", Date.today)
+  end
+
   def self.show_list
     puts "My Todo-list"
-    puts
-    puts "Overdue"
-    puts where("due_date < ?", Date.today).to_displayable_list
-    puts
-    puts "Due Today"
-    puts where("due_date = ?", Date.today).to_displayable_list
-    puts
-    puts "Due Later"
-    puts where("due_date > ?", Date.today).to_displayable_list
+
+    puts "\nOverdue"
+    puts self.overdue.to_displayable_list
+
+    puts "\nDue Today"
+    puts self.due_today.to_displayable_list
+
+    puts "\nDue Later"
+    puts self.due_later.to_displayable_list
   end
 
   def self.add_task(taskDetails)
